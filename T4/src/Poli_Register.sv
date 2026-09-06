@@ -7,7 +7,7 @@ module Poli_Register #(
 	input  logic					clk, 
 	input  logic					sync_reset,
 	input  logic 					enb,
-	input  logic 					l_s,
+	input	 logic					l_s,
 	input  logic [ DW-1 :0 ]	inp,
 	output logic [ DW-1 :0 ]	out
 );
@@ -27,6 +27,7 @@ always_comb begin
 		SISO_LSB_MODE: begin
 			reg_next = {inp[0], reg_r[DW-1:1]};
 		end
+		
 		SIPO_MSB_MODE: begin
 			reg_next = {reg_r[DW-2:0], inp[0]};
 		end
@@ -42,12 +43,17 @@ always_comb begin
 			else
 				reg_next = {reg_r[0], reg_r[DW-1:1]};
 		end
-		L_S_LEFT_CIRC_MODE: begin
+		LOAD_SHIFT_LEFT_CIRC_MODE: begin
 			if (l_s)
 				reg_next = inp;
 			else
 				reg_next = {reg_r[DW-2:0], reg_r[DW-1]};
 		end
+		
+		SIPO_LSB_MODE: begin
+			reg_next = {inp[0], reg_r[DW-1:1]};
+		end
+		
 		
 		default: begin
 			reg_next = reg_r;

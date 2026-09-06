@@ -28,7 +28,7 @@ module MultipleModeRegister_tb;
 	clk   		=  0 ;
 	sync_reset 	=  1 ;
 	enb   		=  0 ;
-	l_s   		=  0 ;
+	l_s   		=  0 ;	// Unicamente se usa para PISO y Load_shift
 	inp   		=  '0;	// Todos los bits empiezan en 0.
 
 // PIPO

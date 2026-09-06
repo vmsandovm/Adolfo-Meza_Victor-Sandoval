@@ -1,9 +1,6 @@
 import Poli_Register_Modes_pkg::*;
 
-module MultipleModeRegister #( 
-	parameter int DW   = 4,
-	parameter int MODE = PIPO_MODE
-)(
+module MultipleModeRegister #( parameter int DW = 4 )(
 	input logic							clk, 
 	input logic							sync_reset,
 	input logic 						enb,
@@ -14,8 +11,8 @@ module MultipleModeRegister #(
 
 	Poli_Register #( 
 	.DW(DW),
-	.MODE(MODE)	
-	) Registro (
+	.MODE(SIPO_LSB_MODE)	
+	) SipoLSB (
 	
 	.clk   (clk),
 	.sync_reset (sync_reset),
