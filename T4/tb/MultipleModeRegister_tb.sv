@@ -6,6 +6,7 @@ module MultipleModeRegister_tb;
 	logic          clk;
 	logic          sync_reset;
 	logic          enb;
+	logic          l_s;
 	logic [DW-1:0] inp;
 	logic [DW-1:0] out;
 
@@ -14,6 +15,7 @@ module MultipleModeRegister_tb;
 		.clk   (clk),
 		.sync_reset (sync_reset),
 		.enb   (enb),
+		.l_s   (l_s),
 		.inp   (inp),
 		.out   (out)
 	);
@@ -26,6 +28,7 @@ module MultipleModeRegister_tb;
 	clk   		=  0 ;
 	sync_reset 	=  1 ;
 	enb   		=  0 ;
+	l_s   		=  0 ;
 	inp   		=  '0;	// Todos los bits empiezan en 0.
 
 // PIPO
