@@ -8,7 +8,13 @@ module Sequential_multiplier#( parameter int DW = 5
 	input logic [DW-1:0] Data1,
 
 	output logic Ready,
-	output logic [(2*DW)-1:0] Result
+	output logic [(2*DW)-1:0] Result,
+	
+	output logic [6:0] HEX0,
+	output logic [6:0] HEX1,
+	output logic [6:0] HEX2,
+	output logic [6:0] HEX3
+	 
 );
 
 	logic [DW-1:0] Multiplicand_w;
@@ -59,6 +65,14 @@ module Sequential_multiplier#( parameter int DW = 5
 		.Result(Result)
 	);
 	
+	Result_display #( .DW(DW)
+	) Display (
+		.Result(Result),
 	
+		.HEX0(HEX0),
+		.HEX1(HEX1),
+		.HEX2(HEX2),
+		.HEX3(HEX3)
+	);
 
 endmodule
