@@ -1,11 +1,11 @@
-module Booth_result #( parameter int DW = 5
+module Booth_result #( parameter int DW
 )(
     input  logic              Clock,
     input  logic              Reset,
     input  logic              Capture,
-    input  logic [2*DW+1:0]   Product,
+    input  logic [(2*DW):0]   Product,
 
-    output logic [2*DW-1:0]   Result
+    output logic [(2*DW):0]   Result
 );
 
 // El registro Product del datapath lleva un bit de mas por arriba y el bit Q(-1)

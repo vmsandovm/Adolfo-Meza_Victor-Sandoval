@@ -45,7 +45,7 @@ module FSM_moore(
 
 // Bloque sincrono de decision por iteracion segun Booth
     always_ff @(posedge Clock) begin
-        if (Reset==1) begin
+        if (Reset==0) begin
             Current_state <= IDLE;
             Iteration_count <= 1'b0;
         end
@@ -91,7 +91,7 @@ module FSM_moore(
         endcase
     end
 
-// Efectos del estado
+// Efectos del estado actual
     always_comb begin
         Load = 1'b0;
         Iterate = 1'b0;
