@@ -9,34 +9,24 @@ module FSM_moore(
     output logic Capture
 );
 // Cantidad de Iteraciones
-    localparam logic [2:0] Last_iteration =3'd100;
+    localparam logic [2:0] Last_iteration =3'b100;
 
 // Estados definidos
-// Ideal. esperando un nuevo start
-//        Load =   0;
-//        Iterate =0;
-//        Capture =0;
-//        Ready =  1; 
-// Load.  Cargar e inicializar operandos
+// Ideal. esperando un nuevo start. Load queda activo aqui, asi el flanco que
+//        acepta Start ya carga los operandos y no hace falta un estado aparte.
 //        Load =   1;
 //        Iterate =0;
 //        Capture =0;
-//        Ready =  0;
-// Run.   Ejecutando Booth algorithm
+//        Ready =  1; 
+// Run.   Ejecutando Booth algorithm. Capture se activa en la ultima iteracion
+//        para guardar el resultado sin gastar un ciclo extra.
 //        Load =   0;
 //        Iterate =1;
-//        Capture =0;
-//        Ready =  0;
-// Done.  Se terminaron las iteraciones y se tiene el resultado listo para mostrar
-//        Load =   0;
-//        Iterate =0;
-//        Capture =1;
+//        Capture =0, salvo en la ultima iteracion;
 //        Ready =  0;
     typedef enum logic [1:0] {
         IDLE,
-        LOAD,
-        RUN,
-        DONE
+        RUN
     } state_t;
 // Desplazaientos entre estados e contador para iteraciones
     state_t Current_state;
@@ -44,17 +34,17 @@ module FSM_moore(
     logic [2:0] Iteration_count;
 
 // Bloque sincrono de decision por iteracion segun Booth
-    always_ff @(posedge Clock) begin
+    always_ff @(posedge Clock or negedge Reset) begin
         if (Reset==0) begin
             Current_state <= IDLE;
             Iteration_count <= 1'b0;
         end
         else begin
             Current_state <= Next_state;
-            if (Current_state == LOAD) begin
+            if (Current_state == IDLE) begin
                 Iteration_count <= 1'b0;
             end
-            else if (Current_state == RUN) begin
+            else begin
                 Iteration_count <= Iteration_count + 1'b1;
             end
         end
@@ -66,23 +56,16 @@ module FSM_moore(
         case (Current_state)
             IDLE: begin
                 if (Start) begin
-                    Next_state = LOAD;
+                    Next_state = RUN;
                 end
             end
-            LOAD: begin
-                Next_state = RUN;
-            end    
             RUN: begin
                 if (Iteration_count == Last_iteration) begin
-                    Next_state = DONE;
+                    Next_state = IDLE;
                 end
                 else begin
                     Next_state = RUN;
                 end
-            end
-
-            DONE: begin
-                Next_state = IDLE;
             end
 
             default: begin
@@ -101,15 +84,13 @@ module FSM_moore(
         case(Current_state)
             IDLE: begin
                 Ready =1'b1;
-            end
-            LOAD: begin
                 Load =1'b1;
             end
             RUN: begin
                 Iterate =1'b1;
-            end
-            DONE: begin
-                Capture =1'b1;
+                if (Iteration_count == Last_iteration) begin
+                    Capture =1'b1;
+                end
             end
             default: begin
                 Ready = 1'b1;

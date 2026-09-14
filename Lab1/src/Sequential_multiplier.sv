@@ -20,6 +20,7 @@ module Sequential_multiplier#( parameter int DW = 5
 	logic [DW-1:0] Multiplicand_w;
 	logic [DW-1:0] Multiplier_w;
 	logic [(2*DW)+1:0] Product_w;
+	logic [(2*DW)+1:0] Product_next_w;
 	logic Iterate_w;
 	logic Load_w;
 	logic Capture_w;
@@ -52,14 +53,17 @@ module Sequential_multiplier#( parameter int DW = 5
 		.Iterate(Iterate_w),
 		.Load(Load_w),
 
-		.Product(Product_w)
+		.Product(Product_w),
+		.Product_next(Product_next_w)
 	);
 
+// Capture cae durante la ultima iteracion, cuando Product_w todavia tiene el paso
+// anterior: el resultado bueno esta en Product_next_w.
 	Booth_result #( .DW(DW)  
 	) Booth_result (
 		.Clock(Clock),
 		.Reset(Reset),
-		.Product(Product_w),
+		.Product(Product_next_w),
 		.Capture(Capture_w),
 
 		.Result(Result)
