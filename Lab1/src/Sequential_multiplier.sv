@@ -19,25 +19,42 @@ module Sequential_multiplier#( parameter int DW = 5
 
 	logic [DW-1:0] Multiplicand_w;
 	logic [DW-1:0] Multiplier_w;
+
 	logic [(2*DW)+1:0] Product_w;
 	logic [(2*DW)+1:0] Product_next_w;
+
 	logic Iterate_w;
 	logic Load_w;
 	logic Capture_w;
+	
+	logic Clock_5MHz_w;
+	logic PLL_locked_w;
+	logic Reset_system_w;
 
+	assign Reset_system_w = Reset & PLL_locked_w;
+	
+	pll Clock_generator (
+		.refclk   (Clock),
+		.rst      (~Reset),
+		.outclk_0 (Clock_5MHz_w),
+		.locked   (PLL_locked_w)
+	);
+	
 	Mux2to1_mod #( .DW(DW)  
 	) Mul_Or_Square (
 		.Input0(Data0),
 		.Input1(Data1),
-		.Sel(Square),
+		.Sel(~Square),
 		.Output_fixed(Multiplicand_w),
 		.Output2(Multiplier_w)
 	);
 	 
-	FSM_moore Booth_controller (
-		.Clock(Clock),
-		.Reset(Reset),
-		.Start(Start),
+	FSM_Mealy #( .DW(DW)  
+	) Booth_controller (
+		.Clock(Clock_5MHz_w),
+		.Reset(Reset_system_w),
+		.Start(~Start),
+
 		.Ready(Ready),
 		.Iterate(Iterate_w),
 		.Load(Load_w),
@@ -46,8 +63,8 @@ module Sequential_multiplier#( parameter int DW = 5
 	
 	Booth_datapath #( .DW(DW)  
 	) Booth_magic (
-		.Reset(Reset),
-		.Clock(Clock),
+		.Reset(Reset_system_w),
+		.Clock(Clock_5MHz_w),
 		.Multiplicand_init(Multiplicand_w),
 		.Multiplier_init(Multiplier_w),
 		.Iterate(Iterate_w),
@@ -57,12 +74,10 @@ module Sequential_multiplier#( parameter int DW = 5
 		.Product_next(Product_next_w)
 	);
 
-// Capture cae durante la ultima iteracion, cuando Product_w todavia tiene el paso
-// anterior: el resultado bueno esta en Product_next_w.
 	Booth_result #( .DW(DW)  
 	) Booth_result (
-		.Clock(Clock),
-		.Reset(Reset),
+		.Clock(Clock_5MHz_w),
+		.Reset(Reset_system_w),
 		.Product(Product_next_w),
 		.Capture(Capture_w),
 
@@ -78,5 +93,5 @@ module Sequential_multiplier#( parameter int DW = 5
 		.HEX2(HEX2),
 		.HEX3(HEX3)
 	);
-
+	
 endmodule

@@ -15,6 +15,8 @@ module Sequential_multiplier_tb;
 	logic Ready;
 	logic [2*DW-1:0] Result;
 	
+	logic [6:0] HEX0, HEX1, HEX2, HEX3;
+	
 // Instancia del DUT
 	Sequential_multiplier #( .DW(DW)
 	) dut (
@@ -26,7 +28,12 @@ module Sequential_multiplier_tb;
 		.Data1(Data1),
 		
 		.Ready(Ready),
-		.Result(Result)
+		.Result(Result),
+		
+		.HEX0(HEX0),
+		.HEX1(HEX1),
+		.HEX2(HEX2),
+		.HEX3(HEX3)
 	);
 	
 //	Clock 5 MHz
@@ -51,7 +58,7 @@ module Sequential_multiplier_tb;
 	Square = 1'b0;
 
 	// Pulso de Start durante un ciclo
-	#100;
+	#200;
 	Start = 1'b1;
 
 	#200;
