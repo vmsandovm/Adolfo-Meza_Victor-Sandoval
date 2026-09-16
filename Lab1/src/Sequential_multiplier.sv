@@ -1,4 +1,5 @@
-module Sequential_multiplier#( parameter int DW = 5
+module Sequential_multiplier#( parameter int DW = 5,
+                               parameter bit ACTIVE_LOW_BUTTONS = 1'b0
 )(
 	input logic Start,
 	input logic Reset,
@@ -31,20 +32,53 @@ module Sequential_multiplier#( parameter int DW = 5
 	logic PLL_locked_w;
 	logic Reset_system_w;
 
+	logic Start_w;
+	logic Square_w;
+	logic [1:0] Start_sync;
+	logic Start_sync_previous;
+	logic Start_pulse_w;
+
 	assign Reset_system_w = Reset & PLL_locked_w;
 	
-	pll Clock_generator (
+	PLL_50MHz_a_5MHz Clock_generator (
 		.refclk   (Clock),
 		.rst      (~Reset),
 		.outclk_0 (Clock_5MHz_w),
 		.locked   (PLL_locked_w)
 	);
+
+// Los botones de la tarjeta son cero al presionarse y son uno sin presionar.
+	always_comb begin
+		if (ACTIVE_LOW_BUTTONS == 1'b1) begin
+			Start_w  = ~Start;
+			Square_w = ~Square;
+		end
+		else begin
+			Start_w  = Start;
+			Square_w = Square;
+		end
+	end
+
+// Solo el flanco dispara la operacion, asi un boton sostenido no la relanza
+	always_ff @(posedge Clock_5MHz_w or negedge Reset_system_w) begin
+		if (Reset_system_w == 1'b0) begin
+			Start_sync     		<= 2'b00;
+			Start_sync_previous <= 1'b0;
+		end
+		else begin
+			Start_sync     		<= {Start_sync[0], Start_w};
+			Start_sync_previous <= Start_sync[1];
+		end
+	end
+
+	// el valor nuevo es 1 Y el valor viejo es 0
+	assign Start_pulse_w = Start_sync[1] & ~Start_sync_previous;
 	
 	Mux2to1_mod #( .DW(DW)  
 	) Mul_Or_Square (
 		.Input0(Data0),
 		.Input1(Data1),
-		.Sel(~Square),
+		.Sel(Square_w),
 		.Output_fixed(Multiplicand_w),
 		.Output2(Multiplier_w)
 	);
@@ -53,7 +87,7 @@ module Sequential_multiplier#( parameter int DW = 5
 	) Booth_controller (
 		.Clock(Clock_5MHz_w),
 		.Reset(Reset_system_w),
-		.Start(~Start),
+		.Start(Start_pulse_w),
 
 		.Ready(Ready),
 		.Iterate(Iterate_w),
