@@ -95,7 +95,7 @@ module Sequential_multiplier#( parameter int DW = 5,
 		.Capture(Capture_w)
 	);
 	
-	Booth_datapath #( .DW(DW)  
+	Booth_datapath_PIPO #( .DW(DW)  
 	) Booth_magic (
 		.Reset(Reset_system_w),
 		.Clock(Clock_5MHz_w),
