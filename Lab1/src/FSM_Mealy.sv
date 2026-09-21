@@ -12,27 +12,29 @@ module FSM_Mealy #( parameter int DW
 // Cantidad de Iteraciones 
     localparam logic [2:0] Last_iteration = DW - 1;
 // Estados definidos
-// Ideal. esperando un nuevo start
+// IDLE. esperando un nuevo start
 //        Load =   0;
 //        Iterate =0;
 //        Capture =0;
 //        Ready =  1; 
-// Load.  Cargar e inicializar operandos
+// Despues de Start = 1
 //        Load =   1;
 //        Iterate =0;
 //        Capture =0;
-//        Ready =  0;
-// Run.   Ejecutando Booth algorithm
+//        Ready =  0; 
+    
+// RUN.   Ejecutando Booth algorithm
 //        Load =   0;
 //        Iterate =1;
 //        Capture =0;
 //        Ready =  0;
-// Done.  Se terminaron las iteraciones y se tiene el resultado listo para mostrar
+// En la ultima iteracion
 //        Load =   0;
-//        Iterate =0;
+//        Iterate =1;
 //        Capture =1;
 //        Ready =  0;
 
+    
 // Estados
     typedef enum logic {
         IDLE,
