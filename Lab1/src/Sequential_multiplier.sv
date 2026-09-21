@@ -37,10 +37,16 @@ module Sequential_multiplier#( parameter int DW = 5,
 	logic [1:0] Start_sync;
 	logic Start_sync_previous;
 	logic Start_pulse_w;
-
+	
 	assign Reset_system_w = Reset & PLL_locked_w;
 	
-	PLL_50MHz_a_5MHz Clock_generator (
+/*
+// Para probar en tb sin pll
+	assign Clock_5MHz_w = Clock;
+	assign PLL_locked_w = 1'b1;	
+*/
+
+	pll PLL_50MHz_a_5MHz(
 		.refclk   (Clock),
 		.rst      (~Reset),
 		.outclk_0 (Clock_5MHz_w),
@@ -95,7 +101,7 @@ module Sequential_multiplier#( parameter int DW = 5,
 		.Capture(Capture_w)
 	);
 	
-	Booth_datapath_PIPO #( .DW(DW)  
+	Booth_datapath #( .DW(DW)  
 	) Booth_magic (
 		.Reset(Reset_system_w),
 		.Clock(Clock_5MHz_w),

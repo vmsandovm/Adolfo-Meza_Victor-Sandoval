@@ -1,5 +1,3 @@
-// Registro de carga y salida paralelas. El reset es asincrono y activo bajo
-// porque la especificacion de Lab 1 pide que responda entre flancos de reloj.
 module PIPO_register #( parameter int DW = 8
 )(
     input  logic          Clock,
