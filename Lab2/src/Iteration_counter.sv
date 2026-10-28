@@ -33,6 +33,7 @@ module Iteration_counter #( parameter int DW = 10
 // Mult, div y square hacen DW iteraciones. Sqrt toma 2 bits por iteracion: DW/2.
 	localparam logic [Count_width-1:0] Last_full = DW - 1;
 	localparam logic [Count_width-1:0] Last_sqrt = (DW / 2) - 1;
+	localparam logic [Count_width-1:0] Last_div  = DW - 2;
 
 	logic [Count_width-1:0] Count_r;
 	logic [Count_width-1:0] Last_count_w;
@@ -52,6 +53,7 @@ module Iteration_counter #( parameter int DW = 10
 // Seleccion de la ultima iteracion segun la operacion
 	always_comb begin
 		case (Operation)
+			2'd1:    Last_count_w = Last_div;
 			2'd2:    Last_count_w = Last_sqrt;
 			default: Last_count_w = Last_full;
 		endcase

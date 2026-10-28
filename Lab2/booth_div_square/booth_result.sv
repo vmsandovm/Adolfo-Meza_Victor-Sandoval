@@ -1,6 +1,6 @@
 /**********************************************************************************************
 	                         ITESO                            
-Module: DMRS_result                                   
+Module: booth_result                                   
 Description: 
 	Logica combinacional que calcula lo que se captura en result, remainder y error al terminar una 
 	multiplicacion o square.
@@ -15,9 +15,9 @@ Description:
 	Date: 20/10/2026                                           
 **********************************************************************************************/
 
-module DMRS_result #( parameter int DW = 10
+module booth_result #( parameter int DW = 10
 )(
-	input  logic [(2*DW)+1:0] Product_next,
+	input  logic [(2*DW):0] Product_next,
 
 	output logic [DW-1:0] Result_d,
 	output logic [DW-1:0] Remainder_d,
